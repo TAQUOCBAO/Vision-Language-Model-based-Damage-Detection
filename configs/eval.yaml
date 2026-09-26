@@ -1,0 +1,16 @@
+f1:
+  # sklearn multilabel average for set-like per-image predictions
+  average: samples
+  zero_division: 0
+
+meteor:
+  backend: nltk  # switch to java if organizer harness requires METEOR 1.5
+
+winner:
+  f1_relative_floor: 0.97  # keep tiers with F1 >= best_F1 * 0.97
+  f1_weight: 0.6
+  meteor_weight: 0.4
+
+split:
+  seed: 42
+  test_size: 0.2

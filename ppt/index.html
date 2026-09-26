@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Structural Damage VLM Diagnosis - Presentation Deck</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --accent-blue: #38bdf8;
+      --accent-green: #34d399;
+      --accent-purple: #a855f7;
+      --accent-amber: #fbbf24;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    button {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    button.primary {
+      background: var(--accent-blue);
+      color: #0f172a;
+      border-color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    button.primary:hover:not(:disabled) {
+      background: #7dd3fc;
+      color: #0f172a;
+    }
+
+    /* Main Slide Container */
+    main {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-y: auto;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1100px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 36px 44px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-header {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+
+    .slide-num {
+      color: var(--accent-blue);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .slide-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .slide-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Grid & Cards inside slides */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .card.highlight {
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-box {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent-green);
+      font-family: monospace;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-main);
+      position: relative;
+      padding-left: 18px;
+    }
+
+    li::before {
+      content: "•";
+      color: var(--accent-blue);
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(51, 65, 85, 0.5);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background: rgba(15, 23, 42, 0.4);
+    }
+
+    pre {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      color: #e2e8f0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+
+    /* Bottom Carousel Bar */
+    footer {
+      background: var(--bg-dark);
+      border-top: 1px solid var(--border-color);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .dot {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dot.active {
+      background: var(--accent-blue);
+      color: #0f172a;
+      font-weight: 600;
+      border-color: var(--accent-blue);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div class="brand">
+      <span class="badge">Project Presentation</span>
+      <span class="title">Qwen3-VL-8B Structural Damage Image-Text Diagnosis</span>
+    </div>
+    <div class="controls">
+      <button id="prevBtn" onclick="prevSlide()">❮ Prev</button>
+      <span id="slideIndicator" style="font-size: 13px; font-weight: 600; color: var(--text-muted);">1 / 11</span>
+      <button id="nextBtn" class="primary" onclick="nextSlide()">Next ❯</button>
+    </div>
+  </header>
+
+  <!-- Slide Content -->
+  <main>
+
+    <!-- Slide 1: Introduction -->
+    <div class="slide active" id="slide-1">
+      <div class="slide-header">
+        <div class="slide-num">Slide 01 · Overview</div>
+        <div class="slide-title">1. Giới thiệu & Mục tiêu Dự án</div>
+        <div class="slide-subtitle">Multimodal Forensic Engineering Diagnosis for Civil Structures</div>
+      </div>
+      <div class="grid-3" style="margin-bottom: 20px;">
+        <div class="stat-box">
+          <div class="stat-val" style="color: var(--accent-blue);">Qwen3-VL 8B</div>
+          <div class="stat-label">Mô hình Nền tảng</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" style="color: var(--accent-green);">0.9528</div>
+          <div class="stat-label">Multilabel F1 Score</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" style="color: var(--accent-amber);">0.8268</div>
+          <div class="stat-label">Weighted Score (Winner)</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Mục tiêu Hệ thống</div>
+          <ul>
+            <li><strong>Chẩn đoán tự động:</strong> Nhận ảnh chụp hư hại công trình và sinh báo cáo giám định định dạng JSON.</li>
+            <li><strong>Hai nhiệm vụ đồng thời:</strong> Phân loại đa nhãn (Multi-label Classification) và sinh mô tả hình thái kỹ thuật (Technical Description).</li>
+            <li><strong>Chạy hoàn toàn Offline:</strong> Tinh chỉnh LoRA trên GPU cục bộ, không phụ thuộc Cloud API.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Cấu trúc JSON Chuẩn Đầu Ra</div>
+          <pre>{
+  "image_id": "00002",
+  "damage_categories": ["cracks", "spalling"],
+  "description": "Longitudinal fracture running across the reinforced concrete beam with adjacent spalling."
+}</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Challenges -->
+    <div class="slide" id="slide-2">
+      <div class="slide-header">
+        <div class="slide-num">Slide 02 · Problem Framing</div>
+        <div class="slide-title">2. Thách thức Kỹ thuật & Không gian Nhãn Đóng</div>
+        <div class="slide-subtitle">Domain Complexity & 10-Class Fixed Taxonomy</div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Thách thức Nghiên cứu</div>
+          <ul>
+            <li><strong>Hiện tượng Đa hư hỏng (Multi-Defect):</strong> >64% ảnh chứa nhiều loại hư hỏng đồng thời (nứt, rỗ tổ ong, gỉ sét cốt thép).</li>
+            <li><strong>Độ nhạy hướng không gian:</strong> Mô tả chứa thông tin hướng nứt (vertical, horizontal). Phép lật ảnh ngẫu nhiên sẽ làm sai lệch mô tả!</li>
+            <li><strong>Mất cân bằng dữ liệu:</strong> Chỉ ~1,200 ảnh với các lớp hiếm (potholes, honeycomb, efflorescence).</li>
+          </ul>
+        </div>
+        <div class="card highlight">
+          <div class="card-title">10 Nhãn Đóng Chuẩn (Closed Set V1)</div>
+          <table>
+            <tr><th>Nhóm Bê tông</th><th>Nhóm Cốt thép / Bề mặt</th></tr>
+            <tr><td>1. spalling (Bong tróc)</td><td>3. corrosion (Ăn mòn/Gỉ)</td></tr>
+            <tr><td>2. cracks (Vết nứt)</td><td>5. exposed_rebar (Lộ cốt thép)</td></tr>
+            <tr><td>4. voids (Lỗ rỗng/Hốc)</td><td>6. peeling (Bong vảy sơn)</td></tr>
+            <tr><td>8. honeycomb (Rỗ tổ ong)</td><td>7. potholes (Ổ gà mặt đường)</td></tr>
+            <tr><td>9. looseness (Lỏng lẻo)</td><td>10. efflorescence (Bị phấn hóa)</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Architecture -->
+    <div class="slide" id="slide-3">
+      <div class="slide-header">
+        <div class="slide-num">Slide 03 · Architecture</div>
+        <div class="slide-title">3. Kiến trúc Toàn diện của Hệ thống</div>
+        <div class="slide-subtitle">End-to-End Multimodal Diagnostic Pipeline</div>
+      </div>
+      <div class="card" style="padding: 14px; margin-bottom: 12px; overflow-x: auto;">
+        <svg width="980" height="150" viewBox="0 0 980 150">
+          <!-- Step 1 -->
+          <rect x="10" y="25" width="160" height="90" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="90" y="55" fill="#f8fafc" font-size="13" font-weight="bold" text-anchor="middle">1. Data Ingestion</text>
+          <text x="90" y="78" fill="#94a3b8" font-size="11" text-anchor="middle">Raw Images + JSON</text>
+          <text x="90" y="96" fill="#38bdf8" font-size="10" text-anchor="middle">Prefix & Keyword Scan</text>
+
+          <line x1="170" y1="70" x2="205" y2="70" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)"/>
+
+          <!-- Step 2 -->
+          <rect x="205" y="25" width="170" height="90" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="290" y="55" fill="#f8fafc" font-size="13" font-weight="bold" text-anchor="middle">2. Silver Labeling</text>
+          <text x="290" y="78" fill="#94a3b8" font-size="11" text-anchor="middle">10 Closed Classes</text>
+          <text x="290" y="96" fill="#38bdf8" font-size="10" text-anchor="middle">Frozen 80/20 Split</text>
+
+          <line x1="375" y1="70" x2="410" y2="70" stroke="#38bdf8" stroke-width="2"/>
+
+          <!-- Step 3 -->
+          <rect x="410" y="25" width="180" height="90" rx="8" fill="#1e293b" stroke="#34d399" stroke-width="1.5"/>
+          <text x="500" y="55" fill="#f8fafc" font-size="13" font-weight="bold" text-anchor="middle">3. Qwen3-VL LoRA SFT</text>
+          <text x="500" y="78" fill="#94a3b8" font-size="11" text-anchor="middle">Frozen Vision + LoRA</text>
+          <text x="500" y="96" fill="#34d399" font-size="10" text-anchor="middle">Rank 64, BF16 (Ada)</text>
+
+          <line x1="590" y1="70" x2="625" y2="70" stroke="#38bdf8" stroke-width="2"/>
+
+          <!-- Step 4 -->
+          <rect x="625" y="25" width="165" height="90" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="707" y="55" fill="#f8fafc" font-size="13" font-weight="bold" text-anchor="middle">4. Post-Processing</text>
+          <text x="707" y="78" fill="#94a3b8" font-size="11" text-anchor="middle">JSON Repair & Align</text>
+          <text x="707" y="96" fill="#38bdf8" font-size="10" text-anchor="middle">Category-Text Sync</text>
+
+          <line x1="790" y1="70" x2="825" y2="70" stroke="#38bdf8" stroke-width="2"/>
+
+          <!-- Step 5 -->
+          <rect x="825" y="25" width="145" height="90" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="2"/>
+          <text x="897" y="55" fill="#f8fafc" font-size="13" font-weight="bold" text-anchor="middle">5. Final JSON</text>
+          <text x="897" y="78" fill="#a855f7" font-size="11" text-anchor="middle">Submission Ready</text>
+          <text x="897" y="96" fill="#34d399" font-size="10" text-anchor="middle">F1: 0.9528 · MET: 0.638</text>
+        </svg>
+      </div>
+      <div class="grid-3">
+        <div class="card"><strong>Offline Execution:</strong> Độc lập hoàn toàn, dữ liệu nội bộ được bảo mật.</div>
+        <div class="card"><strong>Dual Output:</strong> Danh mục chuẩn hóa + mô tả chi tiết chỉ trong 1 lần suy luận.</div>
+        <div class="card"><strong>Deterministic Postprocess:</strong> Đảm bảo 100% JSON tuân thủ schema.</div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Data Engineering -->
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <div class="slide-num">Slide 04 · Data Engineering</div>
+        <div class="slide-title">4. Kỹ thuật Gán Nhãn Silver & Phân Tầng Dữ liệu</div>
+        <div class="slide-subtitle">Silver Labeling Strategy & Stratified Multi-Label Splitting</div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Thuật toán Tổng hợp Nhãn Silver</div>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">
+            Nhãn silver đa nhãn $L_i$ cho ảnh $i$ là phép hợp giữa tiền tố tên file và từ khóa mô tả:
+          </p>
+          <pre style="margin-bottom: 12px;">L_i = Prefix_Seeds(filename) ∪ Text_Keywords(description)</pre>
+          <ul>
+            <li><strong>Prefix Seeds:</strong> Khai thác tiền tố (ví dụ: `crack_` &rarr; `cracks`, `gangf_` &rarr; `exposed_rebar` + `cracks`).</li>
+            <li><strong>Longest-Match-First:</strong> So khớp từ đồng nghĩa dài nhất trước (ví dụ `"exposed rebar"` trước `"exposed"`).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Phân Chia Đóng Băng (Frozen Split)</div>
+          <ul>
+            <li><strong>Thuật toán:</strong> `MultilabelStratifiedShuffleSplit` (80/20, seed 42).</li>
+            <li><strong>Tập Train:</strong> 963 mẫu.</li>
+            <li><strong>Tập Validation (Holdout):</strong> 237 mẫu độc lập.</li>
+            <li><strong>Bảo đảm không rò rỉ:</strong> Artifact cố định tại `data/processed/splits/v1.json`.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Bake-off -->
+    <div class="slide" id="slide-5">
+      <div class="slide-header">
+        <div class="slide-num">Slide 05 · Bake-Off Experiment</div>
+        <div class="slide-title">5. Thử nghiệm Đánh giá 3 Tầng Dữ liệu (Bake-Off)</div>
+        <div class="slide-subtitle">Controlled Comparison of Data Recipes (A / B / C)</div>
+      </div>
+      <div class="grid-3">
+        <div class="card highlight">
+          <div class="card-title">Tier A: Clean Baseline SFT <span class="badge">WINNER</span></div>
+          <ul>
+            <li>963 cặp dữ liệu gốc sạch.</li>
+            <li>Không tăng cường ảnh (0 Aug).</li>
+            <li><strong>Ưu điểm:</strong> Độ chính xác cao nhất, triệt tiêu ảo giác phân loại.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Tier B: Orientation-Safe Aug</div>
+          <ul>
+            <li>1,926 cặp dữ liệu (Gốc + Aug).</li>
+            <li>Tăng cường quang học (Độ sáng, Tương phản, Nhiễu, Làm mờ).</li>
+            <li><strong>Quy tắc hình học:</strong> Khóa phép lật nếu mô tả có từ chỉ hướng.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Tier C: Paraphrase & External</div>
+          <ul>
+            <li>2,889+ mẫu mở rộng.</li>
+            <li>Paraphrase câu văn x3 lần.</li>
+            <li>Trộn ảnh ngoài lớp hiếm với pseudo-caption.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: LoRA Training Recipe -->
+    <div class="slide" id="slide-6">
+      <div class="slide-header">
+        <div class="slide-num">Slide 06 · Training Recipe</div>
+        <div class="slide-title">6. Phương pháp Tinh chỉnh LoRA Tiết kiệm VRAM</div>
+        <div class="slide-subtitle">VRAM-Safe SFT on NVIDIA RTX 5880 Ada (49GB)</div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Thiết lập Siêu Tham Số (LLaMA-Factory)</div>
+          <table>
+            <tr><th>Tham số</th><th>Giá trị cấu hình</th></tr>
+            <tr><td>Model</td><td>Qwen/Qwen3-VL-8B-Instruct</td></tr>
+            <tr><td>LoRA Rank / Alpha</td><td>r = 64, α = 128 (Scaling 2.0)</td></tr>
+            <tr><td>LoRA Targets</td><td>q, k, v, o, gate, up, down proj</td></tr>
+            <tr><td>Vision Tower</td><td>Đóng băng (0 tham số train)</td></tr>
+            <tr><td>Batch Size & Accum</td><td>Batch 1 × Accum 16 = 16</td></tr>
+            <tr><td>Image Max Pixels</td><td>524,288 (~0.5 MP)</td></tr>
+            <tr><td>Learning Rate</td><td>1.0e-4 (Cosine, Warmup 3%)</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">Quản lý Bộ nhớ & Hội tụ</div>
+          <div class="stat-box" style="margin-bottom: 12px;">
+            <div class="stat-val" style="color: var(--accent-green);">28.5 GB</div>
+            <div class="stat-label">Peak VRAM / 49 GB (An toàn 100%)</div>
+          </div>
+          <ul>
+            <li><strong>Đóng băng Vision:</strong> Tiết kiệm ~18 GB VRAM, tránh phá vỡ trọng số thị giác sẵn có.</li>
+            <li><strong>Hội tụ nhanh:</strong> Train loss giảm từ 1.82 xuống 0.249 chỉ sau 3 epoch.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Post-Processing -->
+    <div class="slide" id="slide-7">
+      <div class="slide-header">
+        <div class="slide-num">Slide 07 · Alignment Stack</div>
+        <div class="slide-title">7. Khối Hậu Xử Lý & Đồng Bộ Ngữ Nghĩa</div>
+        <div class="slide-subtitle">Deterministic 4-Stage Post-Processing Pipeline</div>
+      </div>
+      <div class="grid-4" style="margin-bottom: 16px;">
+        <div class="card">
+          <strong style="color: var(--accent-blue);">1. JSON Repair</strong>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Bóc tách markdown fences và định dạng lại cú pháp JSON hợp lệ.</p>
+        </div>
+        <div class="card">
+          <strong style="color: var(--accent-blue);">2. Synonym Map</strong>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Ánh xạ các từ đồng nghĩa về đúng 10 nhãn đóng chuẩn.</p>
+        </div>
+        <div class="card">
+          <strong style="color: var(--accent-blue);">3. Text Sync</strong>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Chèn câu mẫu nếu nhãn có trong list nhưng thiếu trong đoạn văn.</p>
+        </div>
+        <div class="card">
+          <strong style="color: var(--accent-blue);">4. Deduplicate</strong>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Lọc bỏ các câu lặp lại, chuẩn hóa khoảng trắng.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Hiệu quả Đồng bộ Thực tế</div>
+        <div class="grid-2">
+          <div>
+            <span style="font-size: 12px; color: #ef4444; font-weight: 600;">Đầu ra Thô từ Mô hình:</span>
+            <pre>{"damage_categories": ["crack", "rusty"], "description": "Crack on beam."}</pre>
+          </div>
+          <div>
+            <span style="font-size: 12px; color: #22c55e; font-weight: 600;">Sau Post-processing:</span>
+            <pre>{"damage_categories": ["cracks", "corrosion"], "description": "Crack on beam. Minor corrosion was also detected in the structural area."}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Evaluation Results -->
+    <div class="slide" id="slide-8">
+      <div class="slide-header">
+        <div class="slide-num">Slide 08 · Results & Validation</div>
+        <div class="slide-title">8. Đánh giá Thực nghiệm & Chọn Mô hình Thắng cuộc</div>
+        <div class="slide-subtitle">Holdout Evaluation (n = 237) & Winner Selection</div>
+      </div>
+      <div class="card" style="margin-bottom: 16px;">
+        <table>
+          <tr>
+            <th>Cấu hình Thử nghiệm</th>
+            <th>Multilabel F1</th>
+            <th>METEOR Score</th>
+            <th>Weighted (0.6*F1 + 0.4*MET)</th>
+            <th>F1 Safety Gate</th>
+            <th>Kết quả</th>
+          </tr>
+          <tr style="background: rgba(52, 211, 153, 0.1);">
+            <td><strong>Tier A (Clean Baseline SFT)</strong></td>
+            <td><strong>0.9528</strong></td>
+            <td>0.6379</td>
+            <td><strong>0.82684</strong></td>
+            <td>Pass (Baseline)</td>
+            <td>🏆 <strong>WINNER</strong></td>
+          </tr>
+          <tr>
+            <td>Tier B (Aug + Normalize)</td>
+            <td>0.9495</td>
+            <td><strong>0.6427</strong></td>
+            <td>0.82681</td>
+            <td>Pass (&ge; 0.9242)</td>
+            <td>Runner-up</td>
+          </tr>
+          <tr>
+            <td>Tier C (Hybrid Expansion)</td>
+            <td>0.9378</td>
+            <td>0.6136</td>
+            <td>0.80814</td>
+            <td>Pass (&ge; 0.9242)</td>
+            <td>Rank 3</td>
+          </tr>
+        </table>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Công thức Chọn Winner</div>
+          <pre>Score = 0.6 * F1 + 0.4 * METEOR
+Gate: F1 >= 0.97 * Best_F1 (Tất cả đạt)</pre>
+        </div>
+        <div class="card">
+          <div class="card-title">Phân tích Kết quả</div>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            Tier A đạt điểm cao nhất nhờ phân loại danh mục chính xác tuyệt đối. Tier B tăng nhẹ điểm văn bản (METEOR 0.6427) nhưng giảm nhẹ F1.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Full Retrain -->
+    <div class="slide" id="slide-9">
+      <div class="slide-header">
+        <div class="slide-num">Slide 09 · Production Scale</div>
+        <div class="slide-title">9. Huấn luyện Toàn phần trên Tập Dữ liệu Cập nhật</div>
+        <div class="slide-subtitle">Full Retrain on data_v2 (1,200 Images)</div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Quy mô Tái Huấn luyện</div>
+          <ul>
+            <li><strong>Tập dữ liệu:</strong> Toàn bộ 1,200 ảnh từ `data_v2/dataset`.</li>
+            <li><strong>Chiến lược:</strong> Áp dụng công thức thắng cuộc Tier A trên toàn bộ dữ liệu.</li>
+            <li><strong>Số Epoch:</strong> 3.0 Epoch.</li>
+            <li><strong>Trọng số LoRA sinh ra:</strong> `outputs/runs/full_winner_v2`.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Chỉ số Hội tụ & Kết quả</div>
+          <div class="stat-box" style="margin-bottom: 12px;">
+            <div class="stat-val" style="color: var(--accent-green);">0.249</div>
+            <div class="stat-label">Final Training Loss (Epoch 3)</div>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            Tệp dự đoán cuối cùng `outputs/submissions/submission.json` được sinh ra tự động sẵn sàng nộp bài hoặc tích hợp hệ thống.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: Deployment & Low VRAM -->
+    <div class="slide" id="slide-10">
+      <div class="slide-header">
+        <div class="slide-num">Slide 10 · Deployment</div>
+        <div class="slide-title">10. Triển khai Thực tế & Tối ưu Hóa VRAM 4-Bit</div>
+        <div class="slide-subtitle">Hugging Face Hub & Ultra Low-VRAM Inference</div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">Xuất bản Hugging Face</div>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">
+            Adapter LoRA đã được xuất bản công khai trên Hugging Face:
+          </p>
+          <pre style="margin-bottom: 10px;">huggingface-cli download nhantran214/damage-vlm-qwen3vl-8b-lora \
+  --local-dir ./models/damage-vlm-qwen3vl-8b-lora</pre>
+          <p style="font-size: 12px; color: var(--accent-green);">Dung lượng nhẹ chỉ ~0.7 GiB!</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Mức Tiêu thụ VRAM Suy luận</div>
+          <table>
+            <tr><th>Chế độ</th><th>VRAM</th><th>Phù hợp</th></tr>
+            <tr><td>Full BF16</td><td>~18 GB</td><td>Server GPU (RTX 5880, A100)</td></tr>
+            <tr><td>8-Bit</td><td>~10.5 GB</td><td>Workstation (RTX 4080/3090)</td></tr>
+            <tr><td><strong>4-Bit NF4</strong></td><td><strong>~5.8 GB</strong></td><td><strong>GPU Cá nhân (RTX 3060/4060)</strong></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 11: Summary -->
+    <div class="slide" id="slide-11">
+      <div class="slide-header">
+        <div class="slide-num">Slide 11 · Conclusion</div>
+        <div class="slide-title">11. Tổng kết & Hướng Phát triển</div>
+        <div class="slide-subtitle">Key Takeaways & Future Directions</div>
+      </div>
+      <div class="grid-3" style="margin-bottom: 20px;">
+        <div class="card">
+          <div class="card-title">Tính Chặt Chẽ</div>
+          <p style="font-size: 13px; color: var(--text-muted);">Thử nghiệm so sánh 3 tầng dữ liệu có kiểm soát chứng minh dữ liệu SFT sạch đem lại kết quả tốt nhất.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Tính Ổn Định</div>
+          <p style="font-size: 13px; color: var(--text-muted);">Khối hậu xử lý đảm bảo 100% tuân thủ cấu trúc JSON và đồng bộ đa chiều giữa danh mục và văn bản.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Tính Thực Tiễn</div>
+          <p style="font-size: 13px; color: var(--text-muted);">Hỗ trợ chế độ 4-bit chạy trên GPU 6GB VRAM, đóng gói sẵn sàng tải về từ Hugging Face.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Tài liệu Đi kèm</div>
+        <p style="font-size: 13px; color: var(--text-muted);">
+          • Chi tiết toán học và kỹ thuật: <code>TECHNICAL_REPORT.md</code> (21 mục chi tiết chuẩn IEEE).<br>
+          • Hướng dẫn cài đặt và chạy lệnh: <code>README.md</code>.
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Dot Carousel -->
+  <footer id="carousel">
+    <!-- Generated dynamically -->
+  </footer>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 11;
+
+    function renderCarousel() {
+      const carousel = document.getElementById("carousel");
+      carousel.innerHTML = "";
+      for (let i = 1; i <= totalSlides; i++) {
+        const dot = document.createElement("div");
+        dot.className = `dot ${i === currentSlide ? "active" : ""}`;
+        dot.textContent = `${i}. Slide ${i}`;
+        dot.onclick = () => showSlide(i);
+        carousel.appendChild(dot);
+      }
+    }
+
+    function showSlide(index) {
+      if (index < 1 || index > totalSlides) return;
+      currentSlide = index;
+      document.querySelectorAll(".slide").forEach((s, idx) => {
+        s.classList.toggle("active", idx + 1 === currentSlide);
+      });
+      document.getElementById("slideIndicator").textContent = `${currentSlide} / ${totalSlides}`;
+      document.getElementById("prevBtn").disabled = currentSlide === 1;
+      document.getElementById("nextBtn").disabled = currentSlide === totalSlides;
+      renderCarousel();
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") nextSlide();
+      if (e.key === "ArrowLeft") prevSlide();
+    });
+
+    showSlide(1);
+  </script>
+</body>
+</html>

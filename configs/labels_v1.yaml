@@ -1,0 +1,106 @@
+# Closed-set V1 damage labels and mapping rules (English).
+version: "v1"
+
+closed_labels:
+  - spalling
+  - cracks
+  - corrosion
+  - voids
+  - exposed_rebar
+  - peeling
+  - potholes
+  - honeycomb
+  - looseness
+  - efflorescence
+
+# File-name prefix seeds (letter prefixes only). Numeric / no-prefix → [].
+prefix_seeds:
+  crack:
+    - cracks
+  kong:
+    - voids
+  xiu:
+    - corrosion
+  lou:
+    - exposed_rebar
+  gangf:
+    - exposed_rebar
+    - cracks
+
+# Synonyms ordered longest-first within each label (case-insensitive match).
+synonyms:
+  spalling:
+    - broken concrete
+    - concrete loss
+    - spalling
+    - spalled
+    - spalls
+    - spall
+  cracks:
+    - fatigue crack
+    - cracks
+    - crack
+    - fissure
+    - fracture
+    - split
+  corrosion:
+    - corrosion
+    - corroded
+    - oxidized
+    - rusted
+    - rusty
+    - rust
+  voids:
+    - cavities
+    - cavity
+    - voids
+    - void
+    - holes
+    - hole
+    - pores
+    - pore
+  exposed_rebar:
+    - exposed rebar
+    - exposed steel
+    - exposing
+    - rebar
+    - reinforcement
+    - steel bars
+    - steel bar
+    - exposed
+  peeling:
+    - peeled off
+    - peeling
+    - peeled
+    - flaking
+  potholes:
+    - pavement distress
+    - potholes
+    - pothole
+    - pit
+  honeycomb:
+    - honeycombing
+    - honeycomb
+  looseness:
+    - looseness
+    - loosened
+    - detachment
+    - loose
+  efflorescence:
+    - white deposit
+    - white deposits
+    - efflorescence
+    - salting
+
+# Short template sentences for category↔description alignment post-process.
+alignment_templates:
+  spalling: "Spalling was also observed on the structural surface."
+  cracks: "Cracks were also detected in the structural area."
+  corrosion: "Minor corrosion was also detected in the structural area."
+  voids: "Voids or holes were also present in the material."
+  exposed_rebar: "Exposed rebar was also visible in the damaged region."
+  peeling: "Peeling of surface material was also observed."
+  potholes: "A pothole-related defect was also present."
+  honeycomb: "Honeycomb defects were also observed."
+  looseness: "Local looseness of material was also noted."
+  efflorescence: "Efflorescence deposits were also visible."
