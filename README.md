@@ -1,4 +1,4 @@
-# Structural Damage Image-Text VLM Diagnosis
+#  Image-Text VLM-based Structural Damage Diagnosis
 
 Offline pipeline to fine-tune **Qwen3-VL-8B-Instruct** (LoRA via LLaMA-Factory) so each image yields JSON:
 
